@@ -39,7 +39,7 @@ if __name__ == '__main__':
     data_model = DataModel.from_json('./data.json')
     s = MockSolver(data_model)
 
-    routes = s.solve()
+    routes = s.solve(num_generations=5000, verbose=True)
 
     plot_results(data_model, routes)
     plt.show()

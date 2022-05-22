@@ -95,7 +95,7 @@ class MockSolver(Solver):
         inf = 9999999999999999
 
         # If solution is not feasible, return -oo
-        if [] in routes:
+        if [] in routes or self.data.num_vehicles < len(routes):
             return -inf
 
         def distance(id1, id2):
@@ -111,7 +111,7 @@ class MockSolver(Solver):
             sum_path_cost += path_cost
             max_path_cost = max(max_path_cost, path_cost)
 
-        return -(np.log(sum_path_cost) ** 3)
+        return -np.log(sum_path_cost)
 
     def decode_routes(self, individual_route: List[int]):
         """
@@ -180,7 +180,7 @@ class MockSolver(Solver):
                                mutation_percent_genes=0.1,
                                mutation_type=mutation,
                                mutation_num_genes=1,
-                               mutation_probability=0.1,
+                               mutation_probability=0.4,
                                delay_after_gen=0,
                                crossover_type=crossover,
                                initial_population=self.gen_initial_population(),
@@ -190,11 +190,11 @@ class MockSolver(Solver):
         solution, value, _ = ga_instance.best_solution()
         routes = self.decode_routes([int(i) for i in solution])
 
+        if len(routes) > self.data.num_vehicles:
+            raise Exception("No feasible solution found.")
+
         if verbose:
             self._print_summary(routes, value)
             ga_instance.plot_fitness()
-
-        if len(routes) > self.data.num_vehicles:
-            raise Exception("No feasible solution found.")
 
         return routes
