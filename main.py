@@ -1,3 +1,4 @@
+import argparse
 from typing import List
 from random import sample
 
@@ -35,8 +36,13 @@ def plot_results(data_model: DataModel, routes: List[List[int]]):
         ax.annotate(f"{i.id}", (i.x, i.y), fontsize=10)
 
 
-if __name__ == '__main__':
-    data_model = DataModel.from_json('./data.json')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="GA CVRPTW solver")
+    parser.add_argument("--file", help="data file location",
+                        default='./data.json')
+    args = parser.parse_args()
+
+    data_model = DataModel.from_json(args.file)
     s = MockSolver(data_model)
 
     routes = s.solve(num_generations=5000, verbose=True)
